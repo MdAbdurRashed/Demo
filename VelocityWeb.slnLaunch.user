@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "VelocityWeb\\VelocityWeb.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "VelocityAPI\\VelocityAPI.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

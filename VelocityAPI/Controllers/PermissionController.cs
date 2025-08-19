@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VelocityAPI.Model;
+using VelocityShared;
 
 namespace VelocityAPI.Controllers
 {
@@ -24,40 +25,23 @@ namespace VelocityAPI.Controllers
         }
 
 
-        [HttpGet("check")]
-        public IActionResult CheckPermission(int userId, int pageId)
+        [HttpGet("get-by-user")]
+        public async Task<ActionResult<List<PermissionInfo>>> GetByUserAsync(int userId)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            if (user == null)
-                return NotFound("User not found");
+            var permissions = await _context.Permissions
+                .Include(p => p.Page)
+                .Where(p => p.UserId == userId)
+                .Select(p => new PermissionInfo
+                {
+                    UserId = p.UserId,
+                    PageId = p.PageId,
+                    PageTitle = p.Page.PageTitle,
+                    PageUrl = p.Page.PageUrl.ToLower() // canonical lowercase
+                }).ToListAsync();
 
-            var hasAccess = _context.Permissions.Any(p => p.UserId == userId && p.PageId == pageId);
-
-            return Ok(new
-            {
-                UserId = userId,
-                PageId = pageId,
-                AccessGranted = hasAccess
-            });
+            return Ok(permissions);
         }
 
-        [HttpGet("check-by-url")]
-        public IActionResult CheckPermissionByUrl(int userId, string pageUrl)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            if (user == null)
-                return NotFound("User not found");
-
-            var hasAccess = _context.Permissions
-                .Any(p => p.UserId == userId && p.Page.PageUrl == pageUrl);
-
-            return Ok(new
-            {
-                UserId = userId,
-                PageUrl = pageUrl,
-                AccessGranted = hasAccess
-            });
-        }
 
 
 

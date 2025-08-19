@@ -1,27 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using VelocityShared;
+using VelocityWeb.Services;
 
 namespace VelocityWeb.Pages
 {
     public class BusModel : PageModel
     {
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly IPermissionService _permissionService;
         public string Message { get; set; } = "";
 
-        public BusModel(IHttpClientFactory clientFactory) { _clientFactory = clientFactory; }
+        public BusModel(IPermissionService permissionService)
+        {
+            _permissionService = permissionService;
+        }
 
         public async Task OnGetAsync()
         {
-            int? userId = HttpContext.Session.GetInt32("UserId");
+            var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) { Message = "Please login first."; return; }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.GetFromJsonAsync<PermissionResponse>($"https://localhost:44371/api/permission/check?userId={userId}&pageId=1");
-            Message = response != null && response.AccessGranted ? "Access granted to Bus page" : "Access denied";
+            var permissions = await _permissionService.GetPermissionsAsync(userId.Value);
+
+            var hasAccess = permissions.Any(p => p.PageId == PageConstants.BusPageId);
+            Message = hasAccess ? "Access granted to Bus page" : "Access denied";
         }
 
-        public class PermissionResponse { public int UserId { get; set; } public int PageId { get; set; } public bool AccessGranted { get; set; } }
     }
-
-    
 }

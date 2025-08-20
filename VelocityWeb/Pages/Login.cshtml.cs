@@ -41,8 +41,8 @@ using VelocityWeb.ViewModel;
                 HttpContext.Session.SetString("Username", user.Username);
 
                 // Optional: Load permissions to Redis immediately
-                var permissionService = HttpContext.RequestServices.GetRequiredService<IPermissionService>();
-                await permissionService.LoadPermissionsAsync(user.Id);
+                //var permissionService = HttpContext.RequestServices.GetRequiredService<IPermissionService>();
+                //await permissionService.LoadPermissionsAsync(user.Id);
 
                 return RedirectToPage("/Index");
             }

@@ -24,10 +24,10 @@ namespace VelocityWeb.Pages
                 return;
             }
 
-            var permissions = await _permissionService.GetPermissionsAsync(userId.Value);
+            //var permissions = await _permissionService.GetPermissionsAsync(userId.Value);
 
-            var hasAccess = permissions.Any(p => p.PageId == PageConstants.CarPageId);
-            Message = hasAccess ? "Access granted to Car page" : "Access denied";
+            //var hasAccess = permissions.Any(p => p.PageId == PageConstants.CarPageId);
+            //Message = hasAccess ? "Access granted to Car page" : "Access denied";
         }
     }
 }
